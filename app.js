@@ -170,3 +170,210 @@ async function init(){
 }
 
 init();
+/* =========================================================
+   INTEGRAÇÃO COM GOOGLE FORMS
+   Captação de leads - Desafio Metabólico 7 Dias
+   ========================================================= */
+
+const GOOGLE_FORMS_LEADS_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSdL8vuOWKoP2QGHPVxhD3bwy8uvNYkhvZhXMMR5Iz7CscmcNw/formResponse";
+
+const GOOGLE_FORMS_FIELDS = {
+  nome: "entry.92755155",
+  email: "entry.1477825075",
+  whatsapp: "entry.912288515",
+  objetivo: "entry.1446689491",
+  dataEntrada: "entry.225186440",
+  origem: "entry.1004319405"
+};
+
+function normalizarTextoLead(valor) {
+  return String(valor || "").trim();
+}
+
+function obterDataHoraBrasil() {
+  return new Date().toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function montarChaveLead(lead) {
+  return [
+    normalizarTextoLead(lead.nome).toLowerCase(),
+    normalizarTextoLead(lead.email).toLowerCase(),
+    normalizarTextoLead(lead.whatsapp)
+  ].join("|");
+}
+
+async function enviarLeadParaGoogleForms(lead) {
+  const nome = normalizarTextoLead(lead.nome);
+  const email = normalizarTextoLead(lead.email);
+  const whatsapp = normalizarTextoLead(lead.whatsapp);
+  const objetivo = normalizarTextoLead(lead.objetivo || "Não informado");
+
+  if (!nome || (!email && !whatsapp)) {
+    console.warn("Lead incompleto. Envio ao Google Forms cancelado.");
+    return;
+  }
+
+  const chaveLead = montarChaveLead({ nome, email, whatsapp });
+  const chaveJaEnviada = localStorage.getItem("lead_google_forms_enviado");
+
+  if (chaveJaEnviada === chaveLead) {
+    console.log("Lead já enviado anteriormente. Evitando duplicidade.");
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append(GOOGLE_FORMS_FIELDS.nome, nome);
+  formData.append(GOOGLE_FORMS_FIELDS.email, email);
+  formData.append(GOOGLE_FORMS_FIELDS.whatsapp, whatsapp);
+  formData.append(GOOGLE_FORMS_FIELDS.objetivo, objetivo);
+  formData.append(GOOGLE_FORMS_FIELDS.dataEntrada, obterDataHoraBrasil());
+  formData.append(
+    GOOGLE_FORMS_FIELDS.origem,
+    "App Desafio Metabólico 7 Dias - GitHub Pages"
+  );
+
+  try {
+    await fetch(GOOGLE_FORMS_LEADS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: formData
+    });
+
+    localStorage.setItem("lead_google_forms_enviado", chaveLead);
+    console.log("Lead enviado com sucesso para Google Forms.");
+  } catch (error) {
+    console.error("Erro ao enviar lead para Google Forms:", error);
+  }
+}
+
+function buscarValorCampoLead(possiveisNomes) {
+  const seletores = possiveisNomes
+    .map(
+      (nome) =>
+        `input[name*="${nome}" i], input[id*="${nome}" i], input[placeholder*="${nome}" i], select[name*="${nome}" i], select[id*="${nome}" i], textarea[name*="${nome}" i], textarea[id*="${nome}" i]`
+    )
+    .join(",");
+
+  const campo = document.querySelector(seletores);
+  return campo ? campo.value : "";
+}
+
+function buscarLeadNaTela() {
+  return {
+    nome: buscarValorCampoLead(["nome", "name", "participante"]),
+    email: buscarValorCampoLead(["email", "e-mail", "mail"]),
+    whatsapp: buscarValorCampoLead(["whatsapp", "telefone", "celular", "phone"]),
+    objetivo: buscarValorCampoLead(["objetivo", "meta", "goal"])
+  };
+}
+
+function buscarLeadNoLocalStorage() {
+  const possiveisChaves = [
+    "lead",
+    "participant",
+    "participante",
+    "user",
+    "usuario",
+    "metabolic_lead",
+    "desafio_lead",
+    "desafioMetabolicoLead"
+  ];
+
+  for (const chave of possiveisChaves) {
+    try {
+      const bruto = localStorage.getItem(chave);
+      if (!bruto) continue;
+
+      const dados = JSON.parse(bruto);
+
+      const lead = {
+        nome:
+          dados.nome ||
+          dados.name ||
+          dados.nomeCompleto ||
+          dados.fullName ||
+          dados.participante ||
+          "",
+        email: dados.email || dados.eMail || dados.mail || "",
+        whatsapp:
+          dados.whatsapp ||
+          dados.WhatsApp ||
+          dados.telefone ||
+          dados.celular ||
+          dados.phone ||
+          "",
+        objetivo: dados.objetivo || dados.meta || dados.goal || ""
+      };
+
+      if (lead.nome && (lead.email || lead.whatsapp)) {
+        return lead;
+      }
+    } catch (error) {
+      // Ignora chaves que não são JSON válido.
+    }
+  }
+
+  return null;
+}
+
+function tentarEnviarLeadCapturado() {
+  const leadTela = buscarLeadNaTela();
+
+  if (leadTela.nome && (leadTela.email || leadTela.whatsapp)) {
+    enviarLeadParaGoogleForms(leadTela);
+    return;
+  }
+
+  const leadStorage = buscarLeadNoLocalStorage();
+
+  if (leadStorage) {
+    enviarLeadParaGoogleForms(leadStorage);
+  }
+}
+
+/* Captura envio por formulário tradicional */
+document.addEventListener(
+  "submit",
+  function () {
+    setTimeout(tentarEnviarLeadCapturado, 300);
+  },
+  true
+);
+
+/* Captura clique em botões de entrada/acesso */
+document.addEventListener(
+  "click",
+  function (event) {
+    const elemento = event.target;
+    if (!elemento) return;
+
+    const textoBotao = normalizarTextoLead(elemento.innerText).toLowerCase();
+
+    const pareceBotaoDeEntrada =
+      textoBotao.includes("entrar") ||
+      textoBotao.includes("começar") ||
+      textoBotao.includes("comecar") ||
+      textoBotao.includes("acessar") ||
+      textoBotao.includes("iniciar") ||
+      textoBotao.includes("continuar");
+
+    if (pareceBotaoDeEntrada) {
+      setTimeout(tentarEnviarLeadCapturado, 500);
+    }
+  },
+  true
+);
+
+/* Caso o lead já esteja salvo localmente, tenta enviar uma vez ao abrir */
+window.addEventListener("load", function () {
+  setTimeout(tentarEnviarLeadCapturado, 1200);
+});
