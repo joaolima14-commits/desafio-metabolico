@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Desafio Metabólico 7 Dias</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <header>
+        <h1>Desafio Metabólico 7 Dias</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Bem‑vindo!</h2>
+            <p>
+                Reduza o inchaço, controle a fome e organize sua alimentação com um
+                plano simples, prático e possível. Este web app traduz o
+                material impresso em uma experiência interativa e moderna.
+            </p>
+            <p>
+                Para começar, por favor preencha seus dados abaixo. Suas
+                informações serão utilizadas apenas para acompanhar seu progresso
+                e, se necessário, entrar em contato sobre o desafio.
+            </p>
+            <form id="signup-form">
+                <label for="nome">Nome completo</label>
+                <input type="text" id="nome" name="nome" required />
+
+                <label for="email">E‑mail</label>
+                <input type="email" id="email" name="email" required />
+
+                <label for="whatsapp">WhatsApp</label>
+                <input type="tel" id="whatsapp" name="whatsapp" placeholder="(xx) xxxxx‑xxxx" required />
+
+                <label for="idade">Idade</label>
+                <input type="text" id="idade" name="idade" />
+
+                <label for="sexo">Sexo</label>
+                <select id="sexo" name="sexo">
+                    <option value="">Selecione</option>
+                    <option value="feminino">Feminino</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="outro">Outro</option>
+                </select>
+
+                <label for="objetivo">Objetivo principal</label>
+                <select id="objetivo" name="objetivo">
+                    <option value="">Selecione</option>
+                    <option value="emagrecimento">Emagrecimento</option>
+                    <option value="reduzir-compulsao">Reduzir compulsão</option>
+                    <option value="melhorar-rotina">Melhorar rotina</option>
+                    <option value="reduzir-inchaco">Reduzir inchaço</option>
+                    <option value="saude-metabolica">Saúde metabólica</option>
+                    <option value="hipertrofia-definicao">Hipertrofia/Definição</option>
+                </select>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="lgpd" required />
+                    <label for="lgpd">Aceito os termos de privacidade e autorizo o uso dos meus dados para fins deste desafio.</label>
+                </div>
+
+                <button type="submit" class="btn">Acessar o desafio</button>
+            </form>
+        </section>
+    </main>
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            const idade = document.getElementById('idade').value;
+            const sexo = document.getElementById('sexo').value;
+            const objetivo = document.getElementById('objetivo').value;
+            // Save data to localStorage for later use
+            const lead = { nome, email, whatsapp, idade, sexo, objetivo };
+            localStorage.setItem('lead', JSON.stringify(lead));
+            // Redirect to the first page of the challenge
+            window.location.href = 'antes-de-comecar.html';
+        });
+    </script>
+</body>
+</html>
