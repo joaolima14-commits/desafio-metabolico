@@ -3,12 +3,12 @@ const STORAGE = {
   pageIndex: "dm7_page_index",
   notesPrefix: "dm7_note_",
   checklist: "dm7_checklist",
-  leadGoogleForms: "lead_google_forms_enviado"
+  leadGoogleForms: "dm7_lead_google_forms_enviado_v2",
+  leadGoogleFormsPending: "dm7_lead_google_forms_pendente_v2"
 };
 
 let pages = [];
 let current = Number(localStorage.getItem(STORAGE.pageIndex) || 0);
-let envioLeadGoogleFormsEmAndamento = false;
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
@@ -27,8 +27,7 @@ const checklistItems = [
 ];
 
 /* =========================================================
-   INTEGRAÇÃO COM GOOGLE FORMS
-   Captação de leads - Desafio Metabólico 7 Dias
+   GOOGLE FORMS — CAPTAÇÃO DE LEADS
    ========================================================= */
 
 const GOOGLE_FORMS_LEADS_URL =
@@ -56,14 +55,6 @@ function obterDataHoraBrasil() {
     hour: "2-digit",
     minute: "2-digit"
   });
-}
-
-function montarChaveLead(lead) {
-  return [
-    normalizarTextoLead(lead.nome).toLowerCase(),
-    normalizarTextoLead(lead.email).toLowerCase(),
-    normalizarTextoLead(lead.whatsapp)
-  ].join("|");
 }
 
 function normalizarLeadFormulario(data) {
@@ -97,12 +88,15 @@ function normalizarLeadFormulario(data) {
   };
 }
 
-async function enviarLeadParaGoogleForms(leadData) {
-  if (envioLeadGoogleFormsEmAndamento) {
-    console.log("Envio de lead já em andamento. Bloqueando duplicidade.");
-    return;
-  }
+function montarChaveLead(lead) {
+  return [
+    normalizarTextoLead(lead.nome).toLowerCase(),
+    normalizarTextoLead(lead.email).toLowerCase(),
+    normalizarTextoLead(lead.whatsapp)
+  ].join("|");
+}
 
+async function enviarLeadParaGoogleFormsUmaVez(leadData) {
   const leadNormalizado = normalizarLeadFormulario(leadData);
 
   const nome = leadNormalizado.nome;
@@ -111,24 +105,29 @@ async function enviarLeadParaGoogleForms(leadData) {
   const objetivo = leadNormalizado.objetivo || "Não informado";
 
   if (!nome || (!email && !whatsapp)) {
-    console.warn("Lead incompleto. Envio ao Google Forms cancelado.");
+    console.warn("Lead incompleto. Envio cancelado.");
     return;
   }
 
-  const chaveLead = montarChaveLead({ nome, email, whatsapp });
-  const chaveJaEnviada = localStorage.getItem(STORAGE.leadGoogleForms);
+  const chaveLead = montarChaveLead({
+    nome,
+    email,
+    whatsapp
+  });
 
-  if (chaveJaEnviada === chaveLead) {
-    console.log("Lead já enviado anteriormente. Evitando duplicidade.");
+  const jaEnviado = localStorage.getItem(STORAGE.leadGoogleForms);
+  const pendente = localStorage.getItem(STORAGE.leadGoogleFormsPending);
+
+  if (jaEnviado === chaveLead || pendente === chaveLead) {
+    console.log("Lead já enviado ou envio já em andamento. Duplicidade bloqueada.");
     return;
   }
-
-  envioLeadGoogleFormsEmAndamento = true;
 
   /*
-    Marcamos como enviado antes do fetch porque o Google Forms usa no-cors.
-    Isso evita duplicidade causada por duplo clique, recarregamento rápido ou execução repetida.
+    Trava ANTES do envio. Isso é essencial.
+    Assim, se houver duplo clique, reload ou execução repetida, o segundo envio é bloqueado.
   */
+  localStorage.setItem(STORAGE.leadGoogleFormsPending, chaveLead);
   localStorage.setItem(STORAGE.leadGoogleForms, chaveLead);
 
   const formData = new FormData();
@@ -150,18 +149,15 @@ async function enviarLeadParaGoogleForms(leadData) {
       body: formData
     });
 
-    console.log("Lead enviado com sucesso para Google Forms.");
+    console.log("Lead enviado ao Google Forms.");
   } catch (error) {
-    console.error("Erro ao enviar lead para Google Forms:", error);
+    console.error("Erro ao enviar lead:", error);
 
     /*
-      Se houver falha real de rede, libera nova tentativa.
+      Libera nova tentativa apenas se houver falha real de rede.
     */
     localStorage.removeItem(STORAGE.leadGoogleForms);
-  } finally {
-    setTimeout(function () {
-      envioLeadGoogleFormsEmAndamento = false;
-    }, 3000);
+    localStorage.removeItem(STORAGE.leadGoogleFormsPending);
   }
 }
 
@@ -196,11 +192,6 @@ function initLead() {
   const existing = lead();
 
   if (existing) {
-    /*
-      Se o lead já existe neste aparelho, mostra o app.
-      Também tenta enviar ao Google Forms apenas se ainda não tiver sido enviado.
-    */
-    enviarLeadParaGoogleForms(existing);
     showApp();
     return;
   }
@@ -216,12 +207,26 @@ function initLead() {
   leadForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
+    const submitButton = leadForm.querySelector('button[type="submit"], input[type="submit"]');
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Carregando...";
+    }
+
     const data = Object.fromEntries(new FormData(e.currentTarget).entries());
     const leadNormalizado = normalizarLeadFormulario(data);
 
     setLead(leadNormalizado);
-    enviarLeadParaGoogleForms(leadNormalizado);
-    showApp();
+
+    enviarLeadParaGoogleFormsUmaVez(leadNormalizado).finally(() => {
+      showApp();
+
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Entrar no desafio";
+      }
+    });
   });
 }
 
@@ -244,10 +249,14 @@ function showApp() {
     const leadGoal = $("#leadGoal");
 
     if (leadName) leadName.textContent = l.nome || "Participante";
+
     if (leadContact) {
       leadContact.textContent = [l.email, l.whatsapp].filter(Boolean).join(" · ");
     }
-    if (leadGoal) leadGoal.textContent = l.objetivo || "Objetivo não informado";
+
+    if (leadGoal) {
+      leadGoal.textContent = l.objetivo || "Objetivo não informado";
+    }
   }
 
   renderList();
@@ -292,7 +301,10 @@ function renderPage(i) {
   const nextBtn = $("#nextBtn");
 
   if (pageTitle) pageTitle.textContent = p.title;
-  if (pageCounter) pageCounter.textContent = `Página ${current + 1} de ${pages.length}`;
+
+  if (pageCounter) {
+    pageCounter.textContent = `Página ${current + 1} de ${pages.length}`;
+  }
 
   if (pageImg) {
     pageImg.src = p.image;
@@ -447,7 +459,8 @@ function limparDadosDoApp() {
     STORAGE.lead,
     STORAGE.pageIndex,
     STORAGE.checklist,
-    STORAGE.leadGoogleForms
+    STORAGE.leadGoogleForms,
+    STORAGE.leadGoogleFormsPending
   ];
 
   chavesParaRemover.forEach((chave) => localStorage.removeItem(chave));
@@ -463,7 +476,7 @@ function limparDadosDoApp() {
 
 async function init() {
   try {
-    const res = await fetch("pages.json");
+    const res = await fetch("pages.json?versao=20260603-anti-duplicidade-v2");
     pages = await res.json();
   } catch (error) {
     console.error("Erro ao carregar pages.json:", error);
@@ -529,10 +542,6 @@ async function init() {
     if (e.key === "ArrowRight") renderPage(current + 1);
     if (e.key === "ArrowLeft") renderPage(current - 1);
   });
-
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
-  }
 }
 
 init();
