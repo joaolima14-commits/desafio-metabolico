@@ -1,0 +1,29 @@
+
+DESAFIO METABÓLICO 7 DIAS — APP PREMIUM
+
+Arquivos principais:
+- index.html
+- styles.css
+- app.js
+- pages.json
+- manifest.webmanifest
+- sw.js
+- images/ com 28 páginas visuais do material.
+
+Como subir no GitHub:
+1. Abra o repositório desafio-metabolico.
+2. Clique em Add file > Upload files.
+3. Arraste todos os arquivos e pastas deste pacote, não o .zip fechado.
+4. Clique em Commit changes.
+5. Vá em Settings > Pages.
+6. Source: Deploy from a branch.
+7. Branch: main.
+8. Folder: / (root).
+9. Save.
+
+Link esperado:
+https://joaolima14-commits.github.io/desafio-metabolico/
+
+Observação sobre captação de leads:
+Este app estático salva nome, e-mail, WhatsApp, anotações e checklist no navegador do usuário.
+Para receber automaticamente esses dados em uma planilha/CRM, será necessário conectar um backend, Google Forms/Sheets, Formspree, Netlify Forms ou outro serviço externo.

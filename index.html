@@ -1,84 +1,109 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Desafio Metabólico 7 Dias</title>
-    <link rel="stylesheet" href="css/style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desafio Metabólico 7 Dias | Dr. João Pedro Guimarães de Lima</title>
+  <meta name="theme-color" content="#2E394B">
+  <meta name="description" content="Aplicativo premium do Desafio Metabólico 7 Dias, com páginas visuais, anotações, checklist e próximo passo.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <header>
-        <h1>Desafio Metabólico 7 Dias</h1>
+<body class="bg-grain">
+  <section id="leadPage" class="lead-page">
+    <div class="lead-card">
+      <div class="brand-panel">
+        <div>
+          <div class="kicker">Guia prático e educativo</div>
+          <div class="logo-line"></div>
+          <h1 class="brand-title">Desafio<br>Metabólico <span>7 Dias</span></h1>
+          <p class="brand-sub">Reduza o inchaço, controle a fome e organize sua alimentação com um plano simples, prático e possível.</p>
+        </div>
+        <div class="brand-footer">
+          <div class="doctor">Dr. João Pedro Guimarães de Lima</div>
+          <div>Médico Nutrólogo</div>
+        </div>
+      </div>
+      <div class="form-panel">
+        <h2>Comece por aqui</h2>
+        <p>Preencha seus dados para liberar o aplicativo e acompanhar sua evolução.</p>
+        <form id="leadForm" class="form-grid">
+          <div class="field"><label>Nome completo</label><input name="nome" required autocomplete="name"></div>
+          <div class="field"><label>E-mail</label><input type="email" name="email" required autocomplete="email"></div>
+          <div class="field"><label>WhatsApp</label><input name="whatsapp" required inputmode="tel" placeholder="(24) 99992-2539"></div>
+          <div class="field"><label>Objetivo principal</label><select name="objetivo" required>
+            <option value="">Selecione</option>
+            <option>Emagrecimento</option><option>Reduzir inchaço</option><option>Controlar fome e beliscos</option><option>Organizar alimentação</option><option>Melhorar saúde metabólica</option><option>Definição/hipertrofia</option>
+          </select></div>
+          <label class="terms"><input type="checkbox" required> <span>Declaro que entendi que este material é educativo e não substitui consulta médica individual, diagnóstico ou tratamento personalizado.</span></label>
+          <button class="btn btn-primary" type="submit">Acessar o desafio</button>
+          <div class="legal-note">Observação técnica: em hospedagem estática no GitHub Pages, os dados ficam salvos no aparelho do usuário. Para captar leads automaticamente em uma planilha, será necessário conectar um formulário externo, Google Forms/Sheets, CRM ou backend.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="appPage" class="app-shell hidden">
+    <header class="topbar">
+      <div class="top-left">
+        <div class="mark">JL</div>
+        <div class="top-title"><strong>Desafio Metabólico 7 Dias</strong><span id="pageCounter">Página 1 de 28</span></div>
+      </div>
+      <div class="progress-wrap"><div id="progressBar" class="progress-bar"></div></div>
+      <div class="top-actions">
+        <button id="restartBtn" class="btn btn-ghost btn-small">Início</button>
+        <button id="exportBtn" class="btn btn-ghost btn-small">Resumo</button>
+        <a id="whatsappBtn" class="btn btn-primary btn-small" target="_blank" rel="noopener">Próximo passo</a>
+      </div>
     </header>
-    <main>
-        <section>
-            <h2>Bem‑vindo!</h2>
-            <p>
-                Reduza o inchaço, controle a fome e organize sua alimentação com um
-                plano simples, prático e possível. Este web app traduz o
-                material impresso em uma experiência interativa e moderna.
-            </p>
-            <p>
-                Para começar, por favor preencha seus dados abaixo. Suas
-                informações serão utilizadas apenas para acompanhar seu progresso
-                e, se necessário, entrar em contato sobre o desafio.
-            </p>
-            <form id="signup-form">
-                <label for="nome">Nome completo</label>
-                <input type="text" id="nome" name="nome" required />
 
-                <label for="email">E‑mail</label>
-                <input type="email" id="email" name="email" required />
+    <div class="layout">
+      <aside class="sidebar">
+        <h3>Páginas</h3>
+        <div id="pageList" class="page-list"></div>
+      </aside>
 
-                <label for="whatsapp">WhatsApp</label>
-                <input type="tel" id="whatsapp" name="whatsapp" placeholder="(xx) xxxxx‑xxxx" required />
+      <main class="reader-card">
+        <div class="reader-head">
+          <h2 id="pageTitle">Capa</h2>
+          <div class="reader-tools">
+            <button id="openFull" class="btn btn-ghost btn-small">Abrir imagem</button>
+            <button id="prevBtn" class="btn btn-ghost btn-small">← Anterior</button>
+            <button id="nextBtn" class="btn btn-primary btn-small">Próxima →</button>
+          </div>
+        </div>
+        <div class="image-stage"><img id="pageImg" class="page-image" alt="Página do desafio"></div>
+        <div class="nav-row">
+          <button onclick="document.getElementById('prevBtn').click()" class="btn btn-ghost">← Voltar</button>
+          <button onclick="document.getElementById('nextBtn').click()" class="btn btn-primary">Avançar →</button>
+        </div>
+      </main>
 
-                <label for="idade">Idade</label>
-                <input type="text" id="idade" name="idade" />
+      <aside class="notes-panel">
+        <h3>Área pessoal</h3>
+        <div class="data-card"><div class="label">Participante</div><div id="leadName" class="value">—</div><div id="leadContact" class="value" style="font-size:.82rem;color:#cfd6df;margin-top:4px">—</div></div>
+        <div class="data-card"><div class="label">Objetivo</div><div id="leadGoal" class="value">—</div></div>
+        <div class="field"><label>Anotações desta página</label><textarea id="noteText" placeholder="Ex.: horário mais difícil, refeição que funcionou, ajustes para amanhã..."></textarea></div>
+        <button id="saveNoteBtn" class="btn btn-primary" style="width:100%;margin-top:10px">Salvar anotação</button>
+        <div class="data-card" style="margin-top:14px">
+          <div class="label">Checklist rápido</div>
+          <div id="checkGrid" class="check-grid"></div>
+        </div>
+        <div class="export-box">
+          <button id="copyExport" class="btn btn-ghost">Copiar resumo</button>
+          <button id="clearData" class="btn btn-ghost">Limpar dados deste aparelho</button>
+        </div>
+      </aside>
+    </div>
+  </section>
 
-                <label for="sexo">Sexo</label>
-                <select id="sexo" name="sexo">
-                    <option value="">Selecione</option>
-                    <option value="feminino">Feminino</option>
-                    <option value="masculino">Masculino</option>
-                    <option value="outro">Outro</option>
-                </select>
-
-                <label for="objetivo">Objetivo principal</label>
-                <select id="objetivo" name="objetivo">
-                    <option value="">Selecione</option>
-                    <option value="emagrecimento">Emagrecimento</option>
-                    <option value="reduzir-compulsao">Reduzir compulsão</option>
-                    <option value="melhorar-rotina">Melhorar rotina</option>
-                    <option value="reduzir-inchaco">Reduzir inchaço</option>
-                    <option value="saude-metabolica">Saúde metabólica</option>
-                    <option value="hipertrofia-definicao">Hipertrofia/Definição</option>
-                </select>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="lgpd" required />
-                    <label for="lgpd">Aceito os termos de privacidade e autorizo o uso dos meus dados para fins deste desafio.</label>
-                </div>
-
-                <button type="submit" class="btn">Acessar o desafio</button>
-            </form>
-        </section>
-    </main>
-    <script>
-        document.getElementById('signup-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nome = document.getElementById('nome').value;
-            const email = document.getElementById('email').value;
-            const whatsapp = document.getElementById('whatsapp').value;
-            const idade = document.getElementById('idade').value;
-            const sexo = document.getElementById('sexo').value;
-            const objetivo = document.getElementById('objetivo').value;
-            // Save data to localStorage for later use
-            const lead = { nome, email, whatsapp, idade, sexo, objetivo };
-            localStorage.setItem('lead', JSON.stringify(lead));
-            // Redirect to the first page of the challenge
-            window.location.href = 'antes-de-comecar.html';
-        });
-    </script>
+  <div id="exportModal" class="modal hidden">
+    <div class="modal-inner">
+      <div class="modal-head"><h3>Resumo do participante</h3><button id="closeExport" class="btn btn-ghost btn-small">Fechar</button></div>
+      <pre id="exportText"></pre>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+{
+  "name": "Desafio Metabólico 7 Dias",
+  "short_name": "Desafio 7 Dias",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#2E394B",
+  "theme_color": "#2E394B",
+  "description": "App premium do Desafio Metabólico 7 Dias",
+  "icons": [
+    {
+      "src": "images/01-capa.jpeg",
+      "sizes": "1024x1536",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

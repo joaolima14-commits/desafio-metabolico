@@ -1,0 +1,142 @@
+[
+  {
+    "slug": "01-capa",
+    "title": "Capa",
+    "image": "images/01-capa.jpeg"
+  },
+  {
+    "slug": "02-antes-de-comecar",
+    "title": "Antes de começar",
+    "image": "images/02-antes-de-comecar.jpeg"
+  },
+  {
+    "slug": "03-como-funciona",
+    "title": "Como funciona",
+    "image": "images/03-como-funciona.jpeg"
+  },
+  {
+    "slug": "04-para-quem",
+    "title": "Para quem é e para quem não é",
+    "image": "images/04-para-quem.jpeg"
+  },
+  {
+    "slug": "05-como-usar",
+    "title": "Como usar em 7 dias",
+    "image": "images/05-como-usar.jpeg"
+  },
+  {
+    "slug": "06-regras-simples",
+    "title": "Regras simples",
+    "image": "images/06-regras-simples.jpeg"
+  },
+  {
+    "slug": "07-erros",
+    "title": "Os 5 erros",
+    "image": "images/07-erros.jpeg"
+  },
+  {
+    "slug": "08-prato-ideal",
+    "title": "Como montar o prato ideal",
+    "image": "images/08-prato-ideal.jpeg"
+  },
+  {
+    "slug": "09-alimentos-permitidos",
+    "title": "Alimentos permitidos e priorizados",
+    "image": "images/09-alimentos-permitidos.jpeg"
+  },
+  {
+    "slug": "10-alimentos-reduzir",
+    "title": "Alimentos que devem ser reduzidos",
+    "image": "images/10-alimentos-reduzir.jpeg"
+  },
+  {
+    "slug": "11-cardapio-dia-1",
+    "title": "Cardápio Dia 1",
+    "image": "images/11-cardapio-dia-1.jpeg"
+  },
+  {
+    "slug": "12-cardapio-dia-2",
+    "title": "Cardápio Dia 2",
+    "image": "images/12-cardapio-dia-2.jpeg"
+  },
+  {
+    "slug": "13-cardapio-dia-3",
+    "title": "Cardápio Dia 3",
+    "image": "images/13-cardapio-dia-3.jpeg"
+  },
+  {
+    "slug": "14-cardapio-dia-4",
+    "title": "Cardápio Dia 4",
+    "image": "images/14-cardapio-dia-4.jpeg"
+  },
+  {
+    "slug": "15-cardapio-dia-5",
+    "title": "Cardápio Dia 5",
+    "image": "images/15-cardapio-dia-5.jpeg"
+  },
+  {
+    "slug": "16-cardapio-dia-6",
+    "title": "Cardápio Dia 6",
+    "image": "images/16-cardapio-dia-6.jpeg"
+  },
+  {
+    "slug": "17-cardapio-dia-7",
+    "title": "Cardápio Dia 7",
+    "image": "images/17-cardapio-dia-7.jpeg"
+  },
+  {
+    "slug": "18-substituicoes-cafe",
+    "title": "Substituições para café da manhã",
+    "image": "images/18-substituicoes-cafe.jpeg"
+  },
+  {
+    "slug": "19-substituicoes-almoco",
+    "title": "Substituições para almoço",
+    "image": "images/19-substituicoes-almoco.jpeg"
+  },
+  {
+    "slug": "20-substituicoes-lanche",
+    "title": "Substituições para lanche",
+    "image": "images/20-substituicoes-lanche.jpeg"
+  },
+  {
+    "slug": "21-substituicoes-jantar",
+    "title": "Substituições para jantar",
+    "image": "images/21-substituicoes-jantar.jpeg"
+  },
+  {
+    "slug": "22-guia-doce",
+    "title": "Guia para vontade de doce",
+    "image": "images/22-guia-doce.jpeg"
+  },
+  {
+    "slug": "23-estrategia-noite",
+    "title": "Estratégia para fome à noite",
+    "image": "images/23-estrategia-noite.jpeg"
+  },
+  {
+    "slug": "24-estrategia-final-semana",
+    "title": "Estratégia para final de semana",
+    "image": "images/24-estrategia-final-semana.jpeg"
+  },
+  {
+    "slug": "25-lista-compras",
+    "title": "Lista de compras",
+    "image": "images/25-lista-compras.jpeg"
+  },
+  {
+    "slug": "26-checklist-diario",
+    "title": "Checklist diário",
+    "image": "images/26-checklist-diario.jpeg"
+  },
+  {
+    "slug": "27-como-continuar",
+    "title": "Como continuar depois dos 7 dias",
+    "image": "images/27-como-continuar.jpeg"
+  },
+  {
+    "slug": "28-proximo-passo",
+    "title": "Seu próximo passo",
+    "image": "images/28-proximo-passo.jpeg"
+  }
+]
