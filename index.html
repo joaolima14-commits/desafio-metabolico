@@ -9,71 +9,72 @@
   <meta name="description" content="Desafio Metabólico 7 Dias - guia prático e educativo para organização alimentar, controle de fome, substituições e checklist diário." />
   <meta name="theme-color" content="#2E394B" />
 
-  <link rel="stylesheet" href="styles.css?v=20260604-produto-pago-v1" />
+  <link rel="stylesheet" href="styles.css?v=20260604-home-premium-v2" />
   <link rel="manifest" href="manifest.webmanifest" />
 </head>
 
 <body>
-  <!-- TELA INICIAL SEM CADASTRO -->
-  <main id="leadPage" class="lead-page">
-    <section class="lead-shell">
-      <div class="lead-card premium-welcome">
-        <div class="brand-line">
-          <div class="brand-icon">JL</div>
+  <!-- TELA INICIAL PREMIUM -->
+  <main id="leadPage" class="premium-home">
+    <div class="premium-home-bg"></div>
+    <div class="premium-home-overlay"></div>
+
+    <section class="premium-home-content">
+      <div class="premium-home-card">
+        <div class="premium-brand-row">
+          <div class="premium-brand-mark">JL</div>
+
           <div>
-            <strong>Desafio Metabólico 7 Dias</strong>
-            <span>Guia prático e educativo</span>
+            <p class="premium-kicker">Guia prático e educativo</p>
+            <h2>Desafio Metabólico 7 Dias</h2>
           </div>
         </div>
 
-        <div class="welcome-content">
-          <p class="eyebrow">Acesso liberado</p>
+        <div class="premium-divider"></div>
 
-          <h1>Bem-vinda ao Desafio Metabólico 7 Dias</h1>
+        <p class="premium-access">Acesso liberado</p>
 
-          <p class="lead-text">
-            Este material foi criado para te ajudar a organizar sua alimentação, reduzir beliscos,
-            melhorar escolhas e recuperar direção ao longo dos próximos 7 dias.
-          </p>
+        <h1>
+          Bem-vinda ao<br />
+          Desafio Metabólico<br />
+          <span>7 Dias</span>
+        </h1>
 
-          <div class="welcome-box">
-            <p>
-              O objetivo não é buscar perfeição, restrição extrema ou promessa de resultado rápido.
-              O objetivo é seguir um plano simples, visual e possível, um dia de cada vez.
-            </p>
+        <p class="premium-subtitle">
+          Organize sua alimentação, reduza beliscos, controle melhor a fome
+          e recupere direção com um plano simples, visual e possível.
+        </p>
+
+        <div class="premium-benefits">
+          <div>
+            <strong>01</strong>
+            <span>Cardápio visual de 7 dias</span>
           </div>
 
-          <div class="welcome-grid">
-            <div>
-              <span>01</span>
-              <p>Cardápio visual de 7 dias</p>
-            </div>
-
-            <div>
-              <span>02</span>
-              <p>Substituições por refeição</p>
-            </div>
-
-            <div>
-              <span>03</span>
-              <p>Lista de compras e checklist</p>
-            </div>
-
-            <div>
-              <span>04</span>
-              <p>Estratégias para fome, doce e final de semana</p>
-            </div>
+          <div>
+            <strong>02</strong>
+            <span>Substituições por refeição</span>
           </div>
 
-          <button id="startBtn" class="btn primary big-cta" type="button">
-            Começar desafio
-          </button>
+          <div>
+            <strong>03</strong>
+            <span>Lista de compras e checklist</span>
+          </div>
 
-          <p class="medical-disclaimer">
-            Este conteúdo é educativo e informativo. Não substitui consulta médica,
-            diagnóstico, prescrição ou tratamento individualizado.
-          </p>
+          <div>
+            <strong>04</strong>
+            <span>Estratégias para fome, doce e final de semana</span>
+          </div>
         </div>
+
+        <button id="startBtn" class="premium-start-btn" type="button">
+          Começar o desafio agora
+        </button>
+
+        <p class="premium-note">
+          Este material é educativo e informativo. Não substitui consulta médica,
+          diagnóstico, prescrição ou tratamento individualizado.
+        </p>
       </div>
     </section>
   </main>
@@ -113,13 +114,11 @@
     </header>
 
     <section class="layout">
-      <!-- MENU DE PÁGINAS -->
       <aside class="sidebar">
         <h2>Páginas</h2>
         <nav id="pageList" class="page-list"></nav>
       </aside>
 
-      <!-- ÁREA DA IMAGEM -->
       <section class="viewer">
         <div class="viewer-head">
           <h1 id="pageTitle">Capa</h1>
@@ -141,7 +140,6 @@
         </div>
       </section>
 
-      <!-- ÁREA PESSOAL -->
       <aside class="right-panel">
         <div class="info-card">
           <h2>Área pessoal</h2>
@@ -197,7 +195,6 @@
     </section>
   </main>
 
-  <!-- MODAL DE RESUMO -->
   <div id="exportModal" class="modal hidden">
     <div class="modal-card">
       <div class="modal-head">
