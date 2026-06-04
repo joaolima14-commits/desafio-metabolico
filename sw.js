@@ -1,4 +1,4 @@
-const CACHE_NAME = "dm7-cache-home-premium-v2";
+const CACHE_NAME = "dm7-cache-evolucao-premium-v1";
 
 self.addEventListener("install", function () {
   self.skipWaiting();
