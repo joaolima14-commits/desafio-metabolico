@@ -9,7 +9,7 @@
   <meta name="description" content="Desafio Metabólico 7 Dias - guia prático e educativo para organização alimentar, controle de fome, substituições e checklist diário." />
   <meta name="theme-color" content="#2E394B" />
 
-  <link rel="stylesheet" href="styles.css?v=20260604-home-premium-v2" />
+  <link rel="stylesheet" href="styles.css?v=20260604-evolucao-premium-v1" />
   <link rel="manifest" href="manifest.webmanifest" />
 </head>
 
@@ -99,7 +99,7 @@
 
       <div class="top-actions">
         <button id="restartBtn" class="btn ghost" type="button">Início</button>
-        <button id="exportBtn" class="btn ghost" type="button">Resumo</button>
+        <button id="exportBtn" class="btn ghost" type="button">Copiar evolução</button>
 
         <a
           id="whatsappBtn"
@@ -108,17 +108,19 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          Iniciar acompanhamento pelo WhatsApp
+          Iniciar acompanhamento
         </a>
       </div>
     </header>
 
     <section class="layout">
+      <!-- MENU DE PÁGINAS -->
       <aside class="sidebar">
         <h2>Páginas</h2>
         <nav id="pageList" class="page-list"></nav>
       </aside>
 
+      <!-- ÁREA DA IMAGEM -->
       <section class="viewer">
         <div class="viewer-head">
           <h1 id="pageTitle">Capa</h1>
@@ -140,9 +142,10 @@
         </div>
       </section>
 
+      <!-- ÁREA PESSOAL -->
       <aside class="right-panel">
         <div class="info-card">
-          <h2>Área pessoal</h2>
+          <h2>Meu acompanhamento do desafio</h2>
 
           <div class="mini-box">
             <span>Acesso</span>
@@ -150,31 +153,36 @@
             <small>Desafio Metabólico 7 Dias</small>
           </div>
 
-          <label class="field-label" for="noteText">Anotações desta página</label>
+          <p class="local-save-alert">
+            Suas anotações e checklist ficam salvos apenas neste aparelho.
+            Você pode copiar sua evolução pelo botão “Copiar evolução”.
+          </p>
+
+          <label class="field-label" for="noteText">Anotações salvas neste aparelho</label>
 
           <textarea
             id="noteText"
             class="note-area"
-            placeholder="Ex.: horário mais difícil, refeição que funcionou, ajustes para amanhã..."
+            placeholder="Ex.: horário mais difícil do dia, refeição que funcionou, fome, beliscos, ajustes para amanhã..."
           ></textarea>
 
           <button id="saveNoteBtn" class="btn primary full" type="button">
-            Salvar anotação
+            Salvar neste aparelho
           </button>
         </div>
 
         <div class="info-card">
-          <h2>Checklist rápido</h2>
+          <h2>Checklist de evolução</h2>
           <div id="checkGrid" class="check-grid"></div>
         </div>
 
         <div class="info-card next-step-card">
-          <h2>Próximo passo</h2>
+          <h2>Iniciar acompanhamento individual</h2>
 
           <p>
-            Se você deseja transformar o desafio em um plano individualizado,
-            com avaliação médica, exames, composição corporal e estratégia personalizada,
-            inicie um acompanhamento com o Dr. João.
+            Se você quer transformar o desafio em uma estratégia individualizada,
+            com avaliação médica, exames, composição corporal, rotina alimentar e conduta personalizada,
+            fale com o Dr. João pelo WhatsApp.
           </p>
 
           <a
@@ -184,34 +192,35 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            Falar com o Dr. João pelo WhatsApp
+            Quero iniciar acompanhamento
           </a>
         </div>
 
         <button id="clearData" class="btn danger full" type="button">
-          Limpar anotações deste aparelho
+          Apagar evolução deste aparelho
         </button>
       </aside>
     </section>
   </main>
 
+  <!-- MODAL DE EVOLUÇÃO -->
   <div id="exportModal" class="modal hidden">
     <div class="modal-card">
       <div class="modal-head">
-        <h2>Resumo do desafio</h2>
+        <h2>Minha evolução no desafio</h2>
         <button id="closeExport" class="btn ghost" type="button">Fechar</button>
       </div>
 
       <pre id="exportText" class="export-text"></pre>
 
       <button id="copyExport" class="btn primary full" type="button">
-        Copiar resumo
+        Copiar evolução
       </button>
     </div>
   </div>
 
   <div id="toast" class="toast"></div>
 
-  <script src="app.js?v=20260604-produto-pago-v1"></script>
+  <script src="app.js?v=20260604-evolucao-premium-v1"></script>
 </body>
 </html>
