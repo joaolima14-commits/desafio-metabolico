@@ -56,8 +56,37 @@ function showApp() {
   if (appPage) appPage.classList.remove("hidden");
 
   renderList();
-  renderPage(current);
+  renderPage(current, true);
   renderChecklist();
+}
+
+/* =========================================================
+   SCROLL INTELIGENTE
+   No celular, ao avançar, leva direto para a página atual.
+   Não volta mais para a lista de páginas.
+   ========================================================= */
+
+function scrollToViewer() {
+  const viewer = $(".viewer");
+  const topbar = $(".topbar");
+
+  if (!viewer) return;
+
+  setTimeout(function () {
+    const topbarHeight = topbar ? topbar.offsetHeight : 0;
+    const extraSpace = 14;
+
+    const targetTop =
+      viewer.getBoundingClientRect().top +
+      window.pageYOffset -
+      topbarHeight -
+      extraSpace;
+
+    window.scrollTo({
+      top: Math.max(targetTop, 0),
+      behavior: "smooth"
+    });
+  }, 80);
 }
 
 /* =========================================================
@@ -81,12 +110,12 @@ function renderList() {
 
   $$(".page-item").forEach((btn) => {
     btn.addEventListener("click", function () {
-      renderPage(Number(btn.dataset.index));
+      renderPage(Number(btn.dataset.index), true);
     });
   });
 }
 
-function renderPage(i) {
+function renderPage(i, shouldScroll = true) {
   if (i < 0 || i >= pages.length) return;
 
   current = i;
@@ -134,10 +163,9 @@ function renderPage(i) {
 
   renderList();
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  if (shouldScroll) {
+    scrollToViewer();
+  }
 }
 
 /* =========================================================
@@ -321,7 +349,7 @@ function showToast(msg) {
 
 async function init() {
   try {
-    const res = await fetch("pages.json?v=20260604-evolucao-premium-v1");
+    const res = await fetch("pages.json?v=20260604-mobile-ux-v1");
     pages = await res.json();
   } catch (error) {
     console.error("Erro ao carregar pages.json:", error);
@@ -349,25 +377,25 @@ async function init() {
 
   if (prevBtn) {
     prevBtn.addEventListener("click", function () {
-      renderPage(current - 1);
+      renderPage(current - 1, true);
     });
   }
 
   if (nextBtn) {
     nextBtn.addEventListener("click", function () {
-      renderPage(current + 1);
+      renderPage(current + 1, true);
     });
   }
 
   if (prevBtnBottom) {
     prevBtnBottom.addEventListener("click", function () {
-      renderPage(current - 1);
+      renderPage(current - 1, true);
     });
   }
 
   if (nextBtnBottom) {
     nextBtnBottom.addEventListener("click", function () {
-      renderPage(current + 1);
+      renderPage(current + 1, true);
     });
   }
 
@@ -386,7 +414,7 @@ async function init() {
 
   if (restartBtn) {
     restartBtn.addEventListener("click", function () {
-      renderPage(0);
+      renderPage(0, true);
     });
   }
 
@@ -419,8 +447,8 @@ async function init() {
   }
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "ArrowRight") renderPage(current + 1);
-    if (e.key === "ArrowLeft") renderPage(current - 1);
+    if (e.key === "ArrowRight") renderPage(current + 1, true);
+    if (e.key === "ArrowLeft") renderPage(current - 1, true);
   });
 
   if ("serviceWorker" in navigator) {
