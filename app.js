@@ -1,5 +1,5 @@
 const STORAGE = {
-  started: "dm7_started_v1",
+  started: "dm7_started_v2",
   pageIndex: "dm7_page_index",
   notesPrefix: "dm7_note_",
   checklist: "dm7_checklist"
@@ -25,7 +25,7 @@ const checklistItems = [
 ];
 
 /* =========================================================
-   CONTROLE DE ENTRADA DO APP
+   ENTRADA DO APP
    Produto pago entregue pela Kiwify.
    Sem cadastro interno obrigatório.
    ========================================================= */
@@ -151,7 +151,7 @@ function saveNote() {
   if (!p || !noteText) return;
 
   localStorage.setItem(STORAGE.notesPrefix + p.slug, noteText.value);
-  showToast("Anotação salva.");
+  showToast("Anotação salva neste aparelho.");
 }
 
 /* =========================================================
@@ -190,7 +190,7 @@ function renderChecklist() {
 }
 
 /* =========================================================
-   RESUMO / EXPORTAÇÃO
+   EVOLUÇÃO / EXPORTAÇÃO
    ========================================================= */
 
 function buildExport() {
@@ -212,16 +212,19 @@ function buildExport() {
 
   const checked = checklistItems.filter((_, i) => checks[i]).join("\n- ");
 
-  return `DESAFIO METABÓLICO 7 DIAS
+  return `MINHA EVOLUÇÃO — DESAFIO METABÓLICO 7 DIAS
 
 Checklist marcado:
 - ${checked || "Nenhum item marcado"}
 
-Anotações:
+Anotações salvas:
 ${noteLines || "Sem anotações."}
 
+Observação:
+Essas informações foram registradas pela própria participante durante o desafio e servem para ajudar na organização da rotina alimentar.
+
 Próximo passo:
-Se desejar uma avaliação individual, entre em contato com o Dr. João Pedro Guimarães de Lima.`;
+Se desejar transformar o desafio em uma estratégia individualizada, entre em contato com o Dr. João Pedro Guimarães de Lima para avaliação médica.`;
 }
 
 function openExportModal() {
@@ -245,7 +248,7 @@ async function copyExport() {
 
   try {
     await navigator.clipboard.writeText(txt);
-    showToast("Resumo copiado.");
+    showToast("Evolução copiada.");
   } catch {
     showToast("Não foi possível copiar automaticamente.");
   }
@@ -256,9 +259,9 @@ async function copyExport() {
    ========================================================= */
 
 function whatsappLink() {
-  const txt = `Olá, Dr. João. Comprei/acabei de acessar o Desafio Metabólico 7 Dias e gostaria de saber como funciona o acompanhamento individual.
+  const txt = `Olá, Dr. João. Acessei o Desafio Metabólico 7 Dias e gostaria de iniciar um acompanhamento individual.
 
-Quero entender o próximo passo para ter uma avaliação médica personalizada.`;
+Quero entender como funciona a avaliação médica personalizada, com análise de exames, composição corporal, rotina alimentar e estratégia para o meu objetivo.`;
 
   return `https://wa.me/5524999922539?text=${encodeURIComponent(txt)}`;
 }
@@ -269,12 +272,12 @@ function configurarBotoesWhatsapp() {
 
   if (whatsappBtn) {
     whatsappBtn.href = whatsappLink();
-    whatsappBtn.textContent = "Iniciar acompanhamento pelo WhatsApp";
+    whatsappBtn.textContent = "Iniciar acompanhamento";
   }
 
   if (whatsappBtnSide) {
     whatsappBtnSide.href = whatsappLink();
-    whatsappBtnSide.textContent = "Falar com o Dr. João pelo WhatsApp";
+    whatsappBtnSide.textContent = "Quero iniciar acompanhamento";
   }
 }
 
@@ -318,7 +321,7 @@ function showToast(msg) {
 
 async function init() {
   try {
-    const res = await fetch("pages.json?v=20260604-produto-pago-v1");
+    const res = await fetch("pages.json?v=20260604-evolucao-premium-v1");
     pages = await res.json();
   } catch (error) {
     console.error("Erro ao carregar pages.json:", error);
@@ -401,7 +404,7 @@ async function init() {
 
   if (clearData) {
     clearData.addEventListener("click", function () {
-      if (confirm("Deseja apagar suas anotações e checklist deste aparelho?")) {
+      if (confirm("Deseja apagar sua evolução, anotações e checklist deste aparelho?")) {
         limparDadosDoApp();
         location.reload();
       }
