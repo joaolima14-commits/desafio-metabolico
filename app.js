@@ -1,10 +1,8 @@
 const STORAGE = {
-  lead: "dm7_lead",
+  started: "dm7_started_v1",
   pageIndex: "dm7_page_index",
   notesPrefix: "dm7_note_",
-  checklist: "dm7_checklist",
-  leadGoogleForms: "dm7_lead_google_forms_enviado_v2",
-  leadGoogleFormsPending: "dm7_lead_google_forms_pendente_v2"
+  checklist: "dm7_checklist"
 };
 
 let pages = [];
@@ -27,212 +25,28 @@ const checklistItems = [
 ];
 
 /* =========================================================
-   GOOGLE FORMS — CAPTAÇÃO DE LEADS
+   CONTROLE DE ENTRADA DO APP
+   Produto pago entregue pela Kiwify.
+   Sem cadastro interno obrigatório.
    ========================================================= */
 
-const GOOGLE_FORMS_LEADS_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSdL8vuOWKoP2QGHPVxhD3bwy8uvNYkhvZhXMMR5Iz7CscmcNw/formResponse";
+function initStartScreen() {
+  const alreadyStarted = localStorage.getItem(STORAGE.started);
 
-const GOOGLE_FORMS_FIELDS = {
-  nome: "entry.92755155",
-  email: "entry.1477825075",
-  whatsapp: "entry.912288515",
-  objetivo: "entry.1446689491",
-  dataEntrada: "entry.225186440",
-  origem: "entry.1004319405"
-};
-
-function normalizarTextoLead(valor) {
-  return String(valor || "").trim();
-}
-
-function obterDataHoraBrasil() {
-  return new Date().toLocaleString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
-
-function normalizarLeadFormulario(data) {
-  return {
-    nome:
-      normalizarTextoLead(data.nome) ||
-      normalizarTextoLead(data.name) ||
-      normalizarTextoLead(data.nomeCompleto) ||
-      normalizarTextoLead(data.fullName) ||
-      normalizarTextoLead(data.participante),
-
-    email:
-      normalizarTextoLead(data.email) ||
-      normalizarTextoLead(data.eMail) ||
-      normalizarTextoLead(data.mail),
-
-    whatsapp:
-      normalizarTextoLead(data.whatsapp) ||
-      normalizarTextoLead(data.WhatsApp) ||
-      normalizarTextoLead(data.telefone) ||
-      normalizarTextoLead(data.celular) ||
-      normalizarTextoLead(data.phone),
-
-    objetivo:
-      normalizarTextoLead(data.objetivo) ||
-      normalizarTextoLead(data.meta) ||
-      normalizarTextoLead(data.goal) ||
-      "Não informado",
-
-    createdAt: data.createdAt || new Date().toISOString()
-  };
-}
-
-function montarChaveLead(lead) {
-  return [
-    normalizarTextoLead(lead.nome).toLowerCase(),
-    normalizarTextoLead(lead.email).toLowerCase(),
-    normalizarTextoLead(lead.whatsapp)
-  ].join("|");
-}
-
-async function enviarLeadParaGoogleFormsUmaVez(leadData) {
-  const leadNormalizado = normalizarLeadFormulario(leadData);
-
-  const nome = leadNormalizado.nome;
-  const email = leadNormalizado.email;
-  const whatsapp = leadNormalizado.whatsapp;
-  const objetivo = leadNormalizado.objetivo || "Não informado";
-
-  if (!nome || (!email && !whatsapp)) {
-    console.warn("Lead incompleto. Envio cancelado.");
-    return;
-  }
-
-  const chaveLead = montarChaveLead({
-    nome,
-    email,
-    whatsapp
-  });
-
-  const jaEnviado = localStorage.getItem(STORAGE.leadGoogleForms);
-  const pendente = localStorage.getItem(STORAGE.leadGoogleFormsPending);
-
-  if (jaEnviado === chaveLead || pendente === chaveLead) {
-    console.log("Lead já enviado ou envio já em andamento. Duplicidade bloqueada.");
-    return;
-  }
-
-  /*
-    Trava ANTES do envio. Isso é essencial.
-    Assim, se houver duplo clique, reload ou execução repetida, o segundo envio é bloqueado.
-  */
-  localStorage.setItem(STORAGE.leadGoogleFormsPending, chaveLead);
-  localStorage.setItem(STORAGE.leadGoogleForms, chaveLead);
-
-  const formData = new FormData();
-
-  formData.append(GOOGLE_FORMS_FIELDS.nome, nome);
-  formData.append(GOOGLE_FORMS_FIELDS.email, email);
-  formData.append(GOOGLE_FORMS_FIELDS.whatsapp, whatsapp);
-  formData.append(GOOGLE_FORMS_FIELDS.objetivo, objetivo);
-  formData.append(GOOGLE_FORMS_FIELDS.dataEntrada, obterDataHoraBrasil());
-  formData.append(
-    GOOGLE_FORMS_FIELDS.origem,
-    "App Desafio Metabólico 7 Dias - GitHub Pages"
-  );
-
-  try {
-    await fetch(GOOGLE_FORMS_LEADS_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: formData
-    });
-
-    console.log("Lead enviado ao Google Forms.");
-  } catch (error) {
-    console.error("Erro ao enviar lead:", error);
-
-    /*
-      Libera nova tentativa apenas se houver falha real de rede.
-    */
-    localStorage.removeItem(STORAGE.leadGoogleForms);
-    localStorage.removeItem(STORAGE.leadGoogleFormsPending);
-  }
-}
-
-/* =========================================================
-   DADOS DO PARTICIPANTE
-   ========================================================= */
-
-function lead() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE.lead) || "null");
-  } catch {
-    return null;
-  }
-}
-
-function setLead(data) {
-  const leadNormalizado = normalizarLeadFormulario(data);
-  localStorage.setItem(STORAGE.lead, JSON.stringify(leadNormalizado));
-}
-
-function showToast(msg) {
-  const t = $("#toast");
-  if (!t) return;
-
-  t.textContent = msg;
-  t.classList.add("show");
-
-  setTimeout(() => t.classList.remove("show"), 2200);
-}
-
-function initLead() {
-  const existing = lead();
-
-  if (existing) {
+  if (alreadyStarted === "yes") {
     showApp();
     return;
   }
 
-  const leadForm = $("#leadForm");
+  const startBtn = $("#startBtn");
 
-  if (!leadForm) {
-    console.warn("Formulário de lead não encontrado.");
-    showApp();
-    return;
-  }
-
-  leadForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const submitButton = leadForm.querySelector('button[type="submit"], input[type="submit"]');
-
-    if (submitButton) {
-      submitButton.disabled = true;
-      submitButton.textContent = "Carregando...";
-    }
-
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    const leadNormalizado = normalizarLeadFormulario(data);
-
-    setLead(leadNormalizado);
-
-    enviarLeadParaGoogleFormsUmaVez(leadNormalizado).finally(() => {
+  if (startBtn) {
+    startBtn.addEventListener("click", function () {
+      localStorage.setItem(STORAGE.started, "yes");
       showApp();
-
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = "Entrar no desafio";
-      }
     });
-  });
+  }
 }
-
-/* =========================================================
-   APP PRINCIPAL
-   ========================================================= */
 
 function showApp() {
   const leadPage = $("#leadPage");
@@ -241,28 +55,14 @@ function showApp() {
   if (leadPage) leadPage.classList.add("hidden");
   if (appPage) appPage.classList.remove("hidden");
 
-  const l = lead();
-
-  if (l) {
-    const leadName = $("#leadName");
-    const leadContact = $("#leadContact");
-    const leadGoal = $("#leadGoal");
-
-    if (leadName) leadName.textContent = l.nome || "Participante";
-
-    if (leadContact) {
-      leadContact.textContent = [l.email, l.whatsapp].filter(Boolean).join(" · ");
-    }
-
-    if (leadGoal) {
-      leadGoal.textContent = l.objetivo || "Objetivo não informado";
-    }
-  }
-
   renderList();
   renderPage(current);
   renderChecklist();
 }
+
+/* =========================================================
+   RENDERIZAÇÃO DAS PÁGINAS
+   ========================================================= */
 
 function renderList() {
   const box = $("#pageList");
@@ -279,9 +79,11 @@ function renderList() {
     )
     .join("");
 
-  $$(".page-item").forEach((btn) =>
-    btn.addEventListener("click", () => renderPage(Number(btn.dataset.index)))
-  );
+  $$(".page-item").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      renderPage(Number(btn.dataset.index));
+    });
+  });
 }
 
 function renderPage(i) {
@@ -297,8 +99,11 @@ function renderPage(i) {
   const pageImg = $("#pageImg");
   const noteText = $("#noteText");
   const progressBar = $("#progressBar");
+
   const prevBtn = $("#prevBtn");
   const nextBtn = $("#nextBtn");
+  const prevBtnBottom = $("#prevBtnBottom");
+  const nextBtnBottom = $("#nextBtnBottom");
 
   if (pageTitle) pageTitle.textContent = p.title;
 
@@ -319,8 +124,13 @@ function renderPage(i) {
     progressBar.style.width = `${((current + 1) / pages.length) * 100}%`;
   }
 
-  if (prevBtn) prevBtn.disabled = current === 0;
-  if (nextBtn) nextBtn.disabled = current === pages.length - 1;
+  const isFirst = current === 0;
+  const isLast = current === pages.length - 1;
+
+  if (prevBtn) prevBtn.disabled = isFirst;
+  if (nextBtn) nextBtn.disabled = isLast;
+  if (prevBtnBottom) prevBtnBottom.disabled = isFirst;
+  if (nextBtnBottom) nextBtnBottom.disabled = isLast;
 
   renderList();
 
@@ -329,6 +139,10 @@ function renderPage(i) {
     behavior: "smooth"
   });
 }
+
+/* =========================================================
+   ANOTAÇÕES
+   ========================================================= */
 
 function saveNote() {
   const p = pages[current];
@@ -339,6 +153,10 @@ function saveNote() {
   localStorage.setItem(STORAGE.notesPrefix + p.slug, noteText.value);
   showToast("Anotação salva.");
 }
+
+/* =========================================================
+   CHECKLIST
+   ========================================================= */
 
 function renderChecklist() {
   let data = {};
@@ -363,21 +181,19 @@ function renderChecklist() {
     )
     .join("");
 
-  $$("[data-check]").forEach((ch) =>
-    ch.addEventListener("change", () => {
+  $$("[data-check]").forEach((ch) => {
+    ch.addEventListener("change", function () {
       data[ch.dataset.check] = ch.checked;
       localStorage.setItem(STORAGE.checklist, JSON.stringify(data));
-    })
-  );
+    });
+  });
 }
 
 /* =========================================================
-   EXPORTAÇÃO / RESUMO
+   RESUMO / EXPORTAÇÃO
    ========================================================= */
 
 function buildExport() {
-  const l = lead() || {};
-
   const noteLines = pages
     .map((p, i) => {
       const n = localStorage.getItem(STORAGE.notesPrefix + p.slug) || "";
@@ -398,15 +214,14 @@ function buildExport() {
 
   return `DESAFIO METABÓLICO 7 DIAS
 
-Nome: ${l.nome || ""}
-E-mail: ${l.email || ""}
-WhatsApp: ${l.whatsapp || ""}
-Objetivo: ${l.objetivo || ""}
-
 Checklist marcado:
 - ${checked || "Nenhum item marcado"}
 
-Anotações:${noteLines || "\nSem anotações."}`;
+Anotações:
+${noteLines || "Sem anotações."}
+
+Próximo passo:
+Se desejar uma avaliação individual, entre em contato com o Dr. João Pedro Guimarães de Lima.`;
 }
 
 function openExportModal() {
@@ -419,7 +234,10 @@ function openExportModal() {
 
 function closeExportModal() {
   const exportModal = $("#exportModal");
-  if (exportModal) exportModal.classList.add("hidden");
+
+  if (exportModal) {
+    exportModal.classList.add("hidden");
+  }
 }
 
 async function copyExport() {
@@ -434,33 +252,41 @@ async function copyExport() {
 }
 
 /* =========================================================
-   WHATSAPP
+   WHATSAPP — CTA DO ACOMPANHAMENTO
    ========================================================= */
 
 function whatsappLink() {
-  const l = lead() || {};
+  const txt = `Olá, Dr. João. Comprei/acabei de acessar o Desafio Metabólico 7 Dias e gostaria de saber como funciona o acompanhamento individual.
 
-  const txt = `Olá, Dr. João. Finalizei/estou realizando o Desafio Metabólico 7 Dias.
-
-Nome: ${l.nome || ""}
-Objetivo: ${l.objetivo || ""}
-
-Gostaria de dar o próximo passo e fazer uma avaliação individual.`;
+Quero entender o próximo passo para ter uma avaliação médica personalizada.`;
 
   return `https://wa.me/5524999922539?text=${encodeURIComponent(txt)}`;
 }
 
+function configurarBotoesWhatsapp() {
+  const whatsappBtn = $("#whatsappBtn");
+  const whatsappBtnSide = $("#whatsappBtnSide");
+
+  if (whatsappBtn) {
+    whatsappBtn.href = whatsappLink();
+    whatsappBtn.textContent = "Iniciar acompanhamento pelo WhatsApp";
+  }
+
+  if (whatsappBtnSide) {
+    whatsappBtnSide.href = whatsappLink();
+    whatsappBtnSide.textContent = "Falar com o Dr. João pelo WhatsApp";
+  }
+}
+
 /* =========================================================
-   LIMPEZA DOS DADOS DO APP
+   LIMPEZA LOCAL
    ========================================================= */
 
 function limparDadosDoApp() {
   const chavesParaRemover = [
-    STORAGE.lead,
+    STORAGE.started,
     STORAGE.pageIndex,
-    STORAGE.checklist,
-    STORAGE.leadGoogleForms,
-    STORAGE.leadGoogleFormsPending
+    STORAGE.checklist
   ];
 
   chavesParaRemover.forEach((chave) => localStorage.removeItem(chave));
@@ -471,12 +297,28 @@ function limparDadosDoApp() {
 }
 
 /* =========================================================
+   TOAST
+   ========================================================= */
+
+function showToast(msg) {
+  const t = $("#toast");
+  if (!t) return;
+
+  t.textContent = msg;
+  t.classList.add("show");
+
+  setTimeout(function () {
+    t.classList.remove("show");
+  }, 2200);
+}
+
+/* =========================================================
    INICIALIZAÇÃO
    ========================================================= */
 
 async function init() {
   try {
-    const res = await fetch("pages.json?versao=20260603-anti-duplicidade-v2");
+    const res = await fetch("pages.json?v=20260604-produto-pago-v1");
     pages = await res.json();
   } catch (error) {
     console.error("Erro ao carregar pages.json:", error);
@@ -484,64 +326,103 @@ async function init() {
     return;
   }
 
-  initLead();
+  configurarBotoesWhatsapp();
+  initStartScreen();
 
   const prevBtn = $("#prevBtn");
   const nextBtn = $("#nextBtn");
+  const prevBtnBottom = $("#prevBtnBottom");
+  const nextBtnBottom = $("#nextBtnBottom");
+
   const saveNoteBtn = $("#saveNoteBtn");
   const noteText = $("#noteText");
+
   const restartBtn = $("#restartBtn");
   const exportBtn = $("#exportBtn");
   const closeExport = $("#closeExport");
   const copyExportBtn = $("#copyExport");
   const clearData = $("#clearData");
-  const whatsappBtn = $("#whatsappBtn");
   const openFull = $("#openFull");
 
-  if (prevBtn) prevBtn.addEventListener("click", () => renderPage(current - 1));
-  if (nextBtn) nextBtn.addEventListener("click", () => renderPage(current + 1));
+  if (prevBtn) {
+    prevBtn.addEventListener("click", function () {
+      renderPage(current - 1);
+    });
+  }
 
-  if (saveNoteBtn) saveNoteBtn.addEventListener("click", saveNote);
+  if (nextBtn) {
+    nextBtn.addEventListener("click", function () {
+      renderPage(current + 1);
+    });
+  }
+
+  if (prevBtnBottom) {
+    prevBtnBottom.addEventListener("click", function () {
+      renderPage(current - 1);
+    });
+  }
+
+  if (nextBtnBottom) {
+    nextBtnBottom.addEventListener("click", function () {
+      renderPage(current + 1);
+    });
+  }
+
+  if (saveNoteBtn) {
+    saveNoteBtn.addEventListener("click", saveNote);
+  }
 
   if (noteText) {
-    noteText.addEventListener("input", () => {
+    noteText.addEventListener("input", function () {
       const p = pages[current];
       if (!p) return;
+
       localStorage.setItem(STORAGE.notesPrefix + p.slug, noteText.value);
     });
   }
 
-  if (restartBtn) restartBtn.addEventListener("click", () => renderPage(0));
-  if (exportBtn) exportBtn.addEventListener("click", openExportModal);
-  if (closeExport) closeExport.addEventListener("click", closeExportModal);
-  if (copyExportBtn) copyExportBtn.addEventListener("click", copyExport);
+  if (restartBtn) {
+    restartBtn.addEventListener("click", function () {
+      renderPage(0);
+    });
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener("click", openExportModal);
+  }
+
+  if (closeExport) {
+    closeExport.addEventListener("click", closeExportModal);
+  }
+
+  if (copyExportBtn) {
+    copyExportBtn.addEventListener("click", copyExport);
+  }
 
   if (clearData) {
-    clearData.addEventListener("click", () => {
-      if (confirm("Deseja apagar dados, anotações e checklist deste aparelho?")) {
+    clearData.addEventListener("click", function () {
+      if (confirm("Deseja apagar suas anotações e checklist deste aparelho?")) {
         limparDadosDoApp();
         location.reload();
       }
     });
   }
 
-  if (whatsappBtn) {
-    whatsappBtn.addEventListener("click", (e) => {
-      e.currentTarget.href = whatsappLink();
-    });
-  }
-
   if (openFull) {
-    openFull.addEventListener("click", () => {
+    openFull.addEventListener("click", function () {
       if (!pages[current]) return;
       window.open(pages[current].image, "_blank");
     });
   }
 
-  document.addEventListener("keydown", (e) => {
+  document.addEventListener("keydown", function (e) {
     if (e.key === "ArrowRight") renderPage(current + 1);
     if (e.key === "ArrowLeft") renderPage(current - 1);
   });
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  }
 }
 
 init();
